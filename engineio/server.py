@@ -108,12 +108,12 @@ class Server(object):
                 else:
                     self.logger.setLevel(logging.ERROR)
                 self.logger.addHandler(logging.StreamHandler())
-        modes = self.async_modes()
-        if async_mode is not None:
+        modes = self.async_modes()  # 获取所有 async_mode 模式
+        if async_mode is not None:  # 判断 async_mode 参数是否正确
             modes = [async_mode] if async_mode in modes else []
         self._async = None
         self.async_mode = None
-        for mode in modes:
+        for mode in modes:  # 逐个尝试 modes
             try:
                 self._async = importlib.import_module(
                     'engineio.async_drivers.' + mode)._async
