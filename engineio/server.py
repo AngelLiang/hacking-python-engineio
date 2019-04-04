@@ -103,9 +103,9 @@ class Server(object):
             self.logger = default_logger
             if not logging.root.handlers and \
                     self.logger.level == logging.NOTSET:
-                if logger:
+                if logger:  # logger==True
                     self.logger.setLevel(logging.INFO)
-                else:
+                else:   # logger==False, 默认进入这里
                     self.logger.setLevel(logging.ERROR)
                 self.logger.addHandler(logging.StreamHandler())
         modes = self.async_modes()  # 获取所有 async_mode 模式
