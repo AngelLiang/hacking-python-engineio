@@ -454,9 +454,9 @@ class Server(object):
             self.start_service_task = False
             self.start_background_task(self._service_task)
 
-        sid = self._generate_id()
+        sid = self._generate_id()   # 生成sid
         s = socket.Socket(self, sid)
-        self.sockets[sid] = s
+        self.sockets[sid] = s       # 加入 sockets 集合
 
         pkt = packet.Packet(
             packet.OPEN, {'sid': sid,

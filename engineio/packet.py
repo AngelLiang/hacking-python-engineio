@@ -3,7 +3,9 @@ import json as _json
 
 import six
 
+# packet_type 字面量
 (OPEN, CLOSE, PING, PONG, MESSAGE, UPGRADE, NOOP) = (0, 1, 2, 3, 4, 5, 6)
+# packet名称队列， packet_type正好对应下标
 packet_names = ['OPEN', 'CLOSE', 'PING', 'PONG', 'MESSAGE', 'UPGRADE', 'NOOP']
 
 binary_types = (six.binary_type, bytearray)

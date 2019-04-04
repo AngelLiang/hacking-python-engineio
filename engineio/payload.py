@@ -6,6 +6,10 @@ from . import packet
 class Payload(object):
     """Engine.IO payload."""
     def __init__(self, packets=None, encoded_payload=None):
+        """
+        :param packets:
+        :param encoded_payload: 已经编码的payload，需要解码
+        """
         self.packets = packets or []
         if encoded_payload is not None:
             self.decode(encoded_payload)
@@ -36,12 +40,15 @@ class Payload(object):
         self.packets = []
         while encoded_payload:
             if six.byte2int(encoded_payload[0:1]) <= 1:
+                # 寻找 payload 结束符
                 packet_len = 0
                 i = 1
                 while six.byte2int(encoded_payload[i:i + 1]) != 255:
                     packet_len = packet_len * 10 + six.byte2int(
                         encoded_payload[i:i + 1])
                     i += 1
+                # 传入 payload 从开始到结束符的一段数据，生成 packet 并放进 packets 队列
+                # 所以如果 payload 粘包，可能会有多个 packets
                 self.packets.append(packet.Packet(
                     encoded_packet=encoded_payload[i + 1:i + 1 + packet_len]))
             else:
@@ -58,6 +65,7 @@ class Payload(object):
                 packet_len = int(encoded_payload[0:i])
                 pkt = encoded_payload.decode('utf-8', errors='ignore')[
                     i + 1: i + 1 + packet_len].encode('utf-8')
+                # 生成 packet 并放进 packets 队列                
                 self.packets.append(packet.Packet(encoded_packet=pkt))
 
                 # the engine.io protocol sends the packet length in

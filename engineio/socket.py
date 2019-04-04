@@ -9,6 +9,25 @@ from . import payload
 
 class Socket(object):
     """An Engine.IO socket."""
+
+    """主要方法
+
+    :meth poll:
+        等待packet发送到client
+    :meth receive:
+        从client接收packet
+    :meth check_ping_timeout:
+        确保client依旧发送ping
+    :meth send:
+        发送packet到client
+    :meth handle_get_request:
+        处理来自client的长轮询GET请求
+    :meth handle_post_request:
+        处理来自clientclient的长轮询POST请求
+    :meth close:
+        关闭socket连接
+
+    """
     upgrade_protocols = ['websocket']
 
     def __init__(self, server, sid):
@@ -50,6 +69,7 @@ class Socket(object):
                                 self.sid, packet_name,
                                 pkt.data if not isinstance(pkt.data, bytes)
                                 else '<binary>')
+        # 判断 packet 类型
         if pkt.packet_type == packet.PING:
             self.last_ping = time.time()
             self.send(packet.Packet(packet.PONG, pkt.data))
@@ -118,6 +138,7 @@ class Socket(object):
         if length > self.server.max_http_buffer_size:
             raise exceptions.ContentTooLongError()
         else:
+            # 读取输入的数据并生成payload，payload.Payload会解析为packet
             body = environ['wsgi.input'].read(length)
             p = payload.Payload(encoded_payload=body)
             for pkt in p.packets:
