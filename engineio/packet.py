@@ -64,14 +64,17 @@ class Packet(object):
         """Decode a transmitted package."""
         """
         :param encoded_packet: 已编码的packet
+
         """
         b64 = False
+        # 1、判断 encoded_packet 类型
         if not isinstance(encoded_packet, binary_types):
             # encoded_packet 不是二进制类型直接 encode()
             encoded_packet = encoded_packet.encode('utf-8')
         elif not isinstance(encoded_packet, bytes):
             # encoded_packet 不是 bytes 类型则转为 bytes 类型
             encoded_packet = bytes(encoded_packet)
+        # 2、读取 encoded_packet 第一个字节并判断数据包的类型
         self.packet_type = six.byte2int(encoded_packet[0:1])
         if self.packet_type == 98:  # 'b' --> binary base64 encoded packet
             self.binary = True
@@ -84,6 +87,7 @@ class Packet(object):
             self.binary = False
         else:
             self.binary = True
+        # 3、数据解码并存入 self.data
         self.data = None
         if len(encoded_packet) > 1:
             if self.binary:
