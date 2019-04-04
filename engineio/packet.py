@@ -39,17 +39,22 @@ class Packet(object):
             encoded_packet = six.text_type(self.packet_type)
             if self.binary and b64:
                 encoded_packet = 'b' + encoded_packet
+
         if self.binary:
-            if b64:
+            # 二进制
+            if b64:  # 转为base64
                 encoded_packet += base64.b64encode(self.data).decode('utf-8')
             else:
                 encoded_packet += self.data
         elif isinstance(self.data, six.string_types):
+            # 字符串
             encoded_packet += self.data
         elif isinstance(self.data, dict) or isinstance(self.data, list):
+            # 字典或列表，用json序列化
             encoded_packet += self.json.dumps(self.data,
                                               separators=(',', ':'))
         elif self.data is not None:
+            # 其他情况，则直接转换为str
             encoded_packet += str(self.data)
         if always_bytes and not isinstance(encoded_packet, binary_types):
             encoded_packet = encoded_packet.encode('utf-8')
@@ -57,10 +62,15 @@ class Packet(object):
 
     def decode(self, encoded_packet):
         """Decode a transmitted package."""
+        """
+        :param encoded_packet: 已编码的packet
+        """
         b64 = False
         if not isinstance(encoded_packet, binary_types):
+            # encoded_packet 不是二进制类型直接 encode()
             encoded_packet = encoded_packet.encode('utf-8')
         elif not isinstance(encoded_packet, bytes):
+            # encoded_packet 不是 bytes 类型则转为 bytes 类型
             encoded_packet = bytes(encoded_packet)
         self.packet_type = six.byte2int(encoded_packet[0:1])
         if self.packet_type == 98:  # 'b' --> binary base64 encoded packet
