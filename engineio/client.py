@@ -58,6 +58,17 @@ class Client(object):
                  functions that are compatible with the standard library
                  versions.
     """
+
+    """
+    主要方法
+
+        :meth:`on`:
+            注册一个事件处理
+        :meth:`connect`
+            连接到Engine.IO服务器
+        
+    """
+
     event_names = ['connect', 'disconnect', 'message']
 
     def __init__(self, logger=False, json=None):
@@ -81,6 +92,8 @@ class Client(object):
 
         if json is not None:
             packet.Packet.json = json
+
+        # 设置logger
         if not isinstance(logger, bool):
             self.logger = logger
         else:
@@ -152,6 +165,7 @@ class Client(object):
         """
         if self.state != 'disconnected':
             raise ValueError('Client is not in a disconnected state')
+        # 检查是否是有效的传输协议
         valid_transports = ['polling', 'websocket']
         if transports is not None:
             if isinstance(transports, six.string_types):
